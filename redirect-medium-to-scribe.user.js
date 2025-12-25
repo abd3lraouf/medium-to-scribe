@@ -11,8 +11,8 @@
 // @homepageURL  https://github.com/abd3lraouf/medium-to-scribe
 // @supportURL   https://github.com/abd3lraouf/medium-to-scribe/issues
 // @contributionURL https://greasyfork.org/en/scripts/556938-redirect-medium-anywhere-to-scribe-rip
-// @downloadURL  https://raw.githubusercontent.com/abd3lraouf/medium-to-scribe/main/redirect-medium-to-scribe.user.js
-// @updateURL    https://raw.githubusercontent.com/abd3lraouf/medium-to-scribe/main/redirect-medium-to-scribe.user.js
+// @downloadURL  https://github.com/abd3lraouf/medium-to-scribe/raw/refs/heads/main/redirect-medium-to-scribe.user.js
+// @updateURL    https://github.com/abd3lraouf/medium-to-scribe/raw/refs/heads/main/redirect-medium-to-scribe.user.js
 // ==/UserScript==
 
 (function() {
