@@ -10,7 +10,7 @@
 // @description  Auto-redirect Medium articles (not homepages) to scribe.rip
 // @homepageURL  https://github.com/abd3lraouf/medium-to-scribe
 // @supportURL   https://github.com/abd3lraouf/medium-to-scribe/issues
-// @original     https://greasyfork.org/en/scripts/556938-redirect-medium-anywhere-to-scribe-rip
+// @contributionURL https://greasyfork.org/en/scripts/556938-redirect-medium-anywhere-to-scribe-rip
 // @downloadURL  https://raw.githubusercontent.com/abd3lraouf/medium-to-scribe/main/redirect-medium-to-scribe.user.js
 // @updateURL    https://raw.githubusercontent.com/abd3lraouf/medium-to-scribe/main/redirect-medium-to-scribe.user.js
 // ==/UserScript==
