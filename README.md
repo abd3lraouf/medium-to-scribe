@@ -34,6 +34,10 @@ A Tampermonkey/Greasemonkey userscript that automatically redirects Medium artic
 2. Monitors the page for Medium's fingerprint (`__GRAPHQL_URI__` or publisher metadata)
 3. Redirects to the equivalent scribe.rip URL
 
+## Credits
+
+Based on the original script by [David Blue](https://greasyfork.org/en/scripts/556938-redirect-medium-anywhere-to-scribe-rip).
+
 ## License
 
 MIT
