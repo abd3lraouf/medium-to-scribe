@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Redirect Medium Anywhere to scribe.rip
-// @version      0.6
+// @version      0.7
 // @author       abd3lraouf
 // @license      MIT
 // @match        *://*/*
@@ -19,33 +19,26 @@
     'use strict';
 
     const SCRIBE_HOST = 'scribe.rip';
-    const OBSERVER_TIMEOUT_MS = 5000;
+    const OBSERVER_TIMEOUT_MS = 10000;
 
     // Already on scribe.rip, nothing to do
     if (location.hostname === SCRIBE_HOST) return;
 
     // Non-article path patterns to skip
     const NON_ARTICLE_PATTERNS = [
-        /^\/tagged\//,
+        /^\/tagged\/?/,
         /^\/search/,
-        /^\/me\//,
+        /^\/me\/?/,
         /^\/@[\w-]+\/?$/,  // Author profile pages (not their articles)
-        /^\/archive/,
-        /^\/latest/,
-        /^\/popular/,
-        /^\/topics/,
-        /^\/membership/,
-        /^\/plans/,
-        /^\/about/,
-        /^\/collections\//,
-        /^\/tag\//,
-    ];
-
-    // Medium fingerprints in page HTML
-    const MEDIUM_FINGERPRINTS = [
-        '__GRAPHQL_URI__',
-        '"publisher":{"@id":"https://medium.com/"',
-        '"@id":"https://medium.com/#publisher"',
+        /^\/archive\/?/,
+        /^\/latest\/?/,
+        /^\/popular\/?/,
+        /^\/topics\/?/,
+        /^\/membership\/?/,
+        /^\/plans\/?/,
+        /^\/about\/?/,
+        /^\/collections\/?/,
+        /^\/tag\/?/,
     ];
 
     /**
@@ -72,10 +65,51 @@
     }
 
     /**
-     * Check if page HTML contains Medium fingerprints
+     * Check if page is a Medium page using multiple detection methods
      */
-    function isMediumPage(html) {
-        return MEDIUM_FINGERPRINTS.some(fp => html.includes(fp));
+    function isMediumPage() {
+        // Check meta tags
+        const metaGenerator = document.querySelector('meta[name="generator"]');
+        if (metaGenerator && metaGenerator.content.toLowerCase().includes('medium')) {
+            return true;
+        }
+
+        // Check for Medium-specific meta property
+        const metaMedium = document.querySelector('meta[property="al:android:package"][content="com.medium.reader"]');
+        if (metaMedium) {
+            return true;
+        }
+
+        // Check for Medium app links
+        const metaAppId = document.querySelector('meta[name="apple-itunes-app"]');
+        if (metaAppId && metaAppId.content.includes('medium')) {
+            return true;
+        }
+
+        // Check for data-theme attribute Medium uses
+        if (document.body && document.body.hasAttribute('data-theme')) {
+            const scripts = document.querySelectorAll('script');
+            for (const script of scripts) {
+                if (script.src && script.src.includes('medium.com')) {
+                    return true;
+                }
+            }
+        }
+
+        // Check HTML content for fingerprints
+        const html = document.documentElement.innerHTML;
+        const fingerprints = [
+            '__GRAPHQL_URI__',
+            '"publisher":{"@id":"https://medium.com/"',
+            '"@id":"https://medium.com/#publisher"',
+            'medium.com/_/fp',
+            'cdn-client.medium.com',
+            'glyph.medium.com',
+            '"MediumPost"',
+            'data-action="open-in-app"',
+        ];
+
+        return fingerprints.some(fp => html.includes(fp));
     }
 
     /**
@@ -91,20 +125,31 @@
 
     let redirected = false;
 
-    const observer = new MutationObserver(() => {
+    function checkAndRedirect() {
         if (redirected) return;
 
-        if (isMediumPage(document.documentElement.innerHTML)) {
+        if (isMediumPage()) {
             redirected = true;
             observer.disconnect();
             redirectToScribe();
         }
-    });
+    }
 
-    observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true,
-    });
+    const observer = new MutationObserver(checkAndRedirect);
+
+    // Start observing once DOM is available
+    if (document.documentElement) {
+        observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true,
+        });
+    }
+
+    // Also check when DOM is ready
+    document.addEventListener('DOMContentLoaded', checkAndRedirect);
+
+    // And check on load as fallback
+    window.addEventListener('load', checkAndRedirect);
 
     // Stop observing after timeout to avoid resource waste on non-Medium sites
     setTimeout(() => {
